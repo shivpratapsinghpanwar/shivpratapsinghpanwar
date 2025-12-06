@@ -14,7 +14,7 @@ I'm an **AI/ML Engineer** passionate about building **end-to-end ML pipelines**,
 
 ## 💼 Experience
 
-### ML Intern | Kody Technolab
+### ML Engineer | Kody Technolab
 *April 2025 – Present*  
 - Engineered **end-to-end computer vision pipelines** processing 500,000+ images and 100+ hours of video.  
 - Developed and benchmarked **10+ object detection models**; top model achieved **95% mAP**.  
