@@ -58,9 +58,9 @@ graph LR
 - Pipelines that have processed **500K+ images and 100+ hours of robot video**; preprocessing time cut **40%**, production throughput up **~30%**.
 - Model strategy per constraint: YOLO family, SAM-1/2/3, D-FINE, RF-DETR, MobileOne×ArcFace, custom architectures — the right tool for the hardware in the room, with **classical projective geometry as the fallback where deep learning runs out of data**.
 
-## 🏥 Vision where none exists — medical robotics
+## 🏥 Vision where none exists — medical AI
 
-Building the perception stack for a **medical robot detecting rare pediatric anomalies** — microcephaly, hydrocephaly, clubfoot, cleft lip/palate. These conditions had **no existing CV solution and almost no training data** when development started. That's the point: low-data strategies, geometry-first fallbacks, and rigorous evaluation on clinician-curated splits.
+Building perception for **medical robotics targeting rare anomalies** — conditions with **no existing CV solution and almost no training data** when development starts. That's the point: low-data strategies, geometry-first fallbacks where deep learning runs out of examples, and rigorous evaluation on curated clinical splits.
 
 ## 🏭 [Synthetic Data Factory](https://github.com/shivpratapsinghpanwar/Synthetic_Data_Factory)
 
