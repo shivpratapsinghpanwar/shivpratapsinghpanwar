@@ -1,65 +1,105 @@
+<div align="center">
+
 # Shivpratap Singh Panwar
 
-**Computer Vision Research Engineer** — Robotics Perception · Humanoid RL · Edge Inference · Medical AI
+### I teach humanoid robots to move and machines to see — from scratch, on hardware that actually ships.
 
-Ahmedabad, India · [Email](mailto:shivpratapsinghpanwar19@gmail.com) · [LinkedIn](https://www.linkedin.com/in/shivpratap-singh-panwar/) · [Kaggle](https://www.kaggle.com/shivpratap0007) · [GitHub](https://github.com/shivpratapsinghpanwar)
+**Computer Vision Research Engineer** · Humanoid RL · Robot Fleet Perception · Edge Inference · Medical AI
 
-I build perception and control systems that have to work in the real world: humanoid locomotion policies trained end to end, vision pipelines for medical robots where no prior CV solution exists, and models quantized down to INT4 so they run on the hardware that's actually in the room.
+[![Email](https://img.shields.io/badge/Email-shivpratapsinghpanwar19%40gmail.com-EA4335?style=flat-square&logo=gmail&logoColor=white)](mailto:shivpratapsinghpanwar19@gmail.com)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Shivpratap_Singh_Panwar-0A66C2?style=flat-square&logo=linkedin)](https://www.linkedin.com/in/shivpratap-singh-panwar/)
+[![Kaggle](https://img.shields.io/badge/Kaggle-50%2B_notebooks-20BEFF?style=flat-square&logo=kaggle&logoColor=white)](https://www.kaggle.com/shivpratap0007)
+
+<br>
+
+| 🤖 23-DoF humanoid | ⚡ INT4 on Jetson | 🎥 Multi-cam robot fleets | 📄 3 peer-reviewed | 🔬 500K+ imgs pipelined |
+|:---:|:---:|:---:|:---:|:---:|
+| locomotion **from scratch** | full quantization stack | perception in production | IEEE · IBM · Springer | 100+ hrs video |
+
+</div>
 
 ---
 
-## 🤖 Now: end-to-end humanoid development
+## 🤖 Humanoid locomotion — from scratch, and still going
 
-Training **whole-body locomotion policies for the Unitree G1 (23-DoF)** — the full loop from task design to a policy that survives being shoved:
+An ongoing program training **whole-body locomotion for the Unitree G1 (23-DoF)** with **no pretrained policy, no imitation data — reward design up**. Task registry, gait mechanics, perturbation curricula, and the training infrastructure are all custom:
 
-- **Robust locomotion suite** — [my fork of unitree_rl_mjlab](https://github.com/shivpratapsinghpanwar/unitree_rl_mjlab_custom_robot) (Unitree Robotics' RL stack on [mjlab](https://github.com/mujocolab/mjlab), the Isaac-Lab-style API over MuJoCo Warp) with a custom task registry: stand / walk / run / omnidirectional push-and-drag recovery, trained with PPO (RSL-RL).
-- **Speed-adaptive gait clock** — the gait cycle shortens with commanded speed and drops stance fraction below 0.5, opening a genuine **flight phase** so running is learnable rather than a fast walk; reverse walking is a first-class command range, not an afterthought.
-- **Perturbation curriculum**: instantaneous velocity impulses *and* sustained horizontal drags from uniformly random headings, ramped in via curriculum — policies that take hits from any direction.
-- **Training infrastructure that survives reality**: multi-GPU runs on free Kaggle T4s with continuous checkpointing and cross-session resume; a diagnose-and-fix loop with dedicated failure-analysis runs (e.g. isolating a backward-push failure mode before retraining).
-- Exploring **hierarchical robot foundation models** — [custom design work](https://github.com/shivpratapsinghpanwar/tau-0-vla_Custom_Design) on [τ0-VLA](https://github.com/sii-research/tau-0-vla) (world-model-guided test-time computation for robot control).
+```mermaid
+graph LR
+    A["Task & reward design<br/>(custom registry)"] --> B["Massively parallel sim<br/>MuJoCo Warp · mjlab"]
+    B --> C["PPO · RSL-RL<br/>multi-GPU T4"]
+    C --> D["Checkpoint / resume<br/>across session limits"]
+    D --> E["Failure diagnosis<br/>dedicated analysis runs"]
+    E -->|curriculum update| A
+```
 
-## 🏥 Medical robotics perception — Kody Technolab
+- **Running that is actually running** — a speed-adaptive gait clock shortens the cycle with commanded velocity and pushes stance fraction below 0.5, opening a true **flight phase**. Stock fixed clocks make "running" an unlearnable fast walk; mine makes it a gait.
+- **Take hits from any direction** — perturbation curriculum mixing instantaneous velocity impulses with **sustained horizontal drags from uniformly random headings**. The policy doesn't memorize one shove; it learns balance recovery as a skill.
+- **Reverse locomotion as a first-class command** (`lin_vel_x ∈ [−1.2, 2.0]`) — walking backwards is trained, not hoped for.
+- **Anti-cheat reward shaping** — standing-still and feet-air terms that stop the classic failure mode of a robot marching in place to farm gait rewards.
+- **Debugging like an engineer, not a gambler** — when a policy failed backward pushes, it got its own isolation run, diagnosis, and targeted curriculum fix before retraining. Every experiment checkpointed and resumable across free-tier GPU session limits.
+- Foundation-model track: [custom design work](https://github.com/shivpratapsinghpanwar/tau-0-vla_Custom_Design) on [τ0-VLA](https://github.com/sii-research/tau-0-vla) — world-model-guided test-time computation for robot control. Base stack: [my fork](https://github.com/shivpratapsinghpanwar/unitree_rl_mjlab_custom_robot) of Unitree's RL suite on [mjlab](https://github.com/mujocolab/mjlab)/MuJoCo Warp.
 
-Building the vision stack for a **medical robot detecting rare pediatric anomalies** (microcephaly, hydrocephaly, clubfoot, cleft lip/palate) — conditions with minimal training data and **no existing CV solution** at development time. Low-data strategies, classical projective geometry as the fallback where deep learning runs out of data, and multi-task perception (detection, instance segmentation, pose, depth) across security, advertisement, and data-gathering robots plus the Mahindra Assistant platform.
+## 🎥 Perception for robot fleets
+
+At **Kody Technolab** (full-stack robotics company) I build the vision layer for **multi-camera robots operating as fleets** — security, advertisement, and data-gathering platforms plus the **Mahindra Assistant**:
+
+```mermaid
+graph LR
+    A["Multi-camera ingest<br/>sync & calibration"] --> B["Multi-task perception<br/>detect · segment · pose · depth"]
+    B --> C["Quantize<br/>FP16 → INT4"]
+    C --> D["Edge deploy<br/>Jetson · Android robots"]
+    D --> E["Fleet in production"]
+    E -->|"data flywheel: field footage → retraining"| A
+```
+
+- Multi-task heads sharing one latency budget: detection, instance segmentation, pose and depth estimation running together on embedded compute.
+- **The whole quantization ladder** — FP16 / INT8 / UINT8 / **UINT4** via TensorRT, ONNX Runtime, TFLite, OpenVINO — chosen per platform, per model, per latency budget.
+- Pipelines that have processed **500K+ images and 100+ hours of robot video**; preprocessing time cut **40%**, production throughput up **~30%**.
+- Model strategy per constraint: YOLO family, SAM-1/2/3, D-FINE, RF-DETR, MobileOne×ArcFace, custom architectures — the right tool for the hardware in the room, with **classical projective geometry as the fallback where deep learning runs out of data**.
+
+## 🏥 Vision where none exists — medical robotics
+
+Building the perception stack for a **medical robot detecting rare pediatric anomalies** — microcephaly, hydrocephaly, clubfoot, cleft lip/palate. These conditions had **no existing CV solution and almost no training data** when development started. That's the point: low-data strategies, geometry-first fallbacks, and rigorous evaluation on clinician-curated splits.
 
 ## 🏭 [Synthetic Data Factory](https://github.com/shivpratapsinghpanwar/Synthetic_Data_Factory)
 
-An autonomously operated pipeline that generates synthetic medical imagery and **measures whether it actually improves detectors** — not whether it looks nice:
+When real medical data runs out, I manufacture it — and **measure whether it actually helps, not whether it looks pretty**:
 
-- Stable Diffusion 1.5 + per-class LoRA and a **from-scratch DDPM** (no natural-image prior) as pluggable backends; every synthetic image provenance-tracked and screened against **memorization of real patient images** before it may train anything.
-- Honest, paired multi-seed evaluation on HAM10000 skin lesions: rare-class augmentation moved vascular-lesion F1 **+0.050 ± 0.013** and melanoma recall **+0.116 ± 0.048** ([measured results](https://github.com/shivpratapsinghpanwar/Synthetic_Data_Factory/blob/main/docs/results.md)).
-- Runs its whole train/evaluate loop remotely on free Kaggle GPUs via a git-pinned execution runner built for agent-driven iteration.
+- Pluggable generative backends: SD 1.5 + per-class LoRA, and a **from-scratch DDPM with zero natural-image prior** for sensitive domains.
+- Every synthetic image is provenance-tracked and screened for **memorization of real patient images** before it may train anything — privacy treated as a hard gate, not a footnote.
+- Honest paired multi-seed A/B on HAM10000: rare-class augmentation moved vascular-lesion F1 **+0.050 ± 0.013** and melanoma recall **+0.116 ± 0.048** ([full measured results](https://github.com/shivpratapsinghpanwar/Synthetic_Data_Factory/blob/main/docs/results.md)).
+- The entire train→evaluate loop executes remotely on free Kaggle GPUs through a **git-pinned execution runner built for autonomous agent iteration** — every run reproducible to the commit.
 
 ---
 
-## ⚡ Edge inference
+## ⚡ The toolbox
 
 | | |
 |---|---|
 | **Quantization** | FP16 · INT8 · UINT8 · UINT4 — TensorRT, ONNX Runtime, TFLite, OpenVINO |
-| **Targets** | NVIDIA Jetson (Nano / Xavier / Orin), Android robots, custom embedded boards, GPU servers |
-| **Perception** | YOLO family, SAM-1/2/3, Faster/Mask R-CNN, pose & depth estimation, anomaly detection |
-| **Stack** | PyTorch, TensorFlow, OpenCV, MediaPipe, C++, classical CV & projective geometry |
+| **Edge targets** | NVIDIA Jetson (Nano / Xavier / Orin) · Android robots · custom embedded boards · GPU servers |
+| **Perception** | YOLO family · SAM-1/2/3 · D-FINE · RF-DETR · Faster/Mask R-CNN · pose · depth · anomaly detection |
+| **Robot learning** | MuJoCo Warp · mjlab · RSL-RL (PPO) · reward & curriculum design · sim-to-real thinking |
+| **Core** | PyTorch · TensorFlow · OpenCV · MediaPipe · C++ · Python · classical CV & projective geometry |
 
-Shipped: CV pipelines over **500K+ images / 100+ hours of video**, 10+ detector benchmark (best **95% mAP**), ~30% production throughput gains from architecture + inference optimization.
-
-My [Kaggle](https://www.kaggle.com/shivpratap0007) is the public lab notebook — **50+ notebooks, 19 datasets**: D-FINE fine-tuning with ONNX/OpenVINO export, SlowFast video action recognition, MoveNet+LSTM pose pipelines, MobileOne×ArcFace face embedding, RF-DETR detection, and the G1 locomotion training runs above.
-
----
+**Public lab notebook** → [Kaggle](https://www.kaggle.com/shivpratap0007): 50+ notebooks, 19 datasets — D-FINE fine-tuning with ONNX/OpenVINO export, SlowFast action recognition, MoveNet+LSTM pose pipelines, face embedding, and the G1 locomotion runs above, all reproducible.
 
 ## 📄 Publications
 
-- **KrishiDisha: Revolutionizing Agriculture with Intelligent Recommendations using Computer Vision** — *IEEE ICoEIT, Jul 2025*. Multi-task CV platform (F1 0.99 / precision 0.96 / R² 0.98), field-validated by 150+ farmers.
-- **Web-BCD: A Machine and Deep Learning Approach for Breast Cancer Detection** — *IBM Technical Report, Dec 2024*. 89%→94% accuracy (ROC-AUC 0.96), deployed live for clinician use.
+- **KrishiDisha: Revolutionizing Agriculture with Intelligent Recommendations using Computer Vision** — *IEEE ICoEIT, Jul 2025*. Multi-task CV platform (F1 0.99 / precision 0.96 / R² 0.98), **field-validated by 150+ farmers**.
+- **Web-BCD: A Machine and Deep Learning Approach for Breast Cancer Detection** — *IBM Technical Report, Dec 2024*. 89%→94% accuracy (ROC-AUC 0.96), **deployed live for clinician use**.
 - **Understanding the Patterns of Student Dropout: A Review** — *Springer, Smart Technology, Jun 2024* ([chapter](https://link.springer.com/chapter/10.1007/978-981-97-9006-7_20)).
 
-## 💼 Experience
+## 💼 The short version
 
-- **ML Engineer · Kody Technolab** — Nov 2025 – present (intern Apr–Oct 2025)
-- **Deep Learning Research Mentee · IBM India** — Jul–Dec 2024
-
-**B.Tech CSE (AI/ML)** · Medi-Caps University, Indore · 2021–2025 · CGPA 8.67 · Head of Research & Astronomy, Science Club
+**ML Engineer · Kody Technolab** (Nov 2025 – present; intern Apr–Oct 2025) · **DL Research Mentee · IBM India** (2024)
+**B.Tech CSE (AI/ML)** · Medi-Caps University · CGPA 8.67 · Head of Research & Astronomy, Science Club
 
 ---
 
-*Older projects (KrishiDisha app, Web-BCD, dropout prediction, world-suicide-data analysis) live in the repos below.*
+<div align="center">
+
+*I do the boring analysis of research papers, design for compute-constrained reality, merge approaches, and ship the result.*
+
+</div>
