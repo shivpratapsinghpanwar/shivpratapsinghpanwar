@@ -1,90 +1,65 @@
-# Hi there 👋, I'm Shivpratap Singh Panwar
+# Shivpratap Singh Panwar
 
-I'm an **AI/ML Engineer** passionate about building **end-to-end ML pipelines**, developing impactful **computer vision, NLP, and data analysis solutions**, and deploying them to real-world applications. I have hands-on experience with **deep learning, model deployment, and data-driven research**.
+**Computer Vision Research Engineer** — Robotics Perception · Humanoid RL · Edge Inference · Medical AI
+
+Ahmedabad, India · [Email](mailto:shivpratapsinghpanwar19@gmail.com) · [LinkedIn](https://www.linkedin.com/in/shivpratap-singh-panwar/) · [Kaggle](https://www.kaggle.com/shivpratap0007) · [GitHub](https://github.com/shivpratapsinghpanwar)
+
+I build perception and control systems that have to work in the real world: humanoid locomotion policies trained end to end, vision pipelines for medical robots where no prior CV solution exists, and models quantized down to INT4 so they run on the hardware that's actually in the room.
+
+---
+
+## 🤖 Now: end-to-end humanoid development
+
+Training **whole-body locomotion policies for the Unitree G1 (23-DoF)** — the full loop from task design to a policy that survives being shoved:
+
+- **Robust locomotion suite** — [my fork of unitree_rl_mjlab](https://github.com/shivpratapsinghpanwar/unitree_rl_mjlab_custom_robot) (Unitree Robotics' RL stack on [mjlab](https://github.com/mujocolab/mjlab), the Isaac-Lab-style API over MuJoCo Warp) with a custom task registry: stand / walk / run / omnidirectional push-and-drag recovery, trained with PPO (RSL-RL).
+- **Speed-adaptive gait clock** — the gait cycle shortens with commanded speed and drops stance fraction below 0.5, opening a genuine **flight phase** so running is learnable rather than a fast walk; reverse walking is a first-class command range, not an afterthought.
+- **Perturbation curriculum**: instantaneous velocity impulses *and* sustained horizontal drags from uniformly random headings, ramped in via curriculum — policies that take hits from any direction.
+- **Training infrastructure that survives reality**: multi-GPU runs on free Kaggle T4s with continuous checkpointing and cross-session resume; a diagnose-and-fix loop with dedicated failure-analysis runs (e.g. isolating a backward-push failure mode before retraining).
+- Exploring **hierarchical robot foundation models** — [custom design work](https://github.com/shivpratapsinghpanwar/tau-0-vla_Custom_Design) on [τ0-VLA](https://github.com/sii-research/tau-0-vla) (world-model-guided test-time computation for robot control).
+
+## 🏥 Medical robotics perception — Kody Technolab
+
+Building the vision stack for a **medical robot detecting rare pediatric anomalies** (microcephaly, hydrocephaly, clubfoot, cleft lip/palate) — conditions with minimal training data and **no existing CV solution** at development time. Low-data strategies, classical projective geometry as the fallback where deep learning runs out of data, and multi-task perception (detection, instance segmentation, pose, depth) across security, advertisement, and data-gathering robots plus the Mahindra Assistant platform.
+
+## 🏭 [Synthetic Data Factory](https://github.com/shivpratapsinghpanwar/Synthetic_Data_Factory)
+
+An autonomously operated pipeline that generates synthetic medical imagery and **measures whether it actually improves detectors** — not whether it looks nice:
+
+- Stable Diffusion 1.5 + per-class LoRA and a **from-scratch DDPM** (no natural-image prior) as pluggable backends; every synthetic image provenance-tracked and screened against **memorization of real patient images** before it may train anything.
+- Honest, paired multi-seed evaluation on HAM10000 skin lesions: rare-class augmentation moved vascular-lesion F1 **+0.050 ± 0.013** and melanoma recall **+0.116 ± 0.048** ([measured results](https://github.com/shivpratapsinghpanwar/Synthetic_Data_Factory/blob/main/docs/results.md)).
+- Runs its whole train/evaluate loop remotely on free Kaggle GPUs via a git-pinned execution runner built for agent-driven iteration.
 
 ---
 
-## 🛠️ Skills & Tools
+## ⚡ Edge inference
 
-**Languages & Tools:** Python, C++, PyTorch, TensorFlow, Scikit-learn, OpenCV, SQL, Git, Docker (familiar), GitHub Actions (familiar), Heroku, Matplotlib, Seaborn  
+| | |
+|---|---|
+| **Quantization** | FP16 · INT8 · UINT8 · UINT4 — TensorRT, ONNX Runtime, TFLite, OpenVINO |
+| **Targets** | NVIDIA Jetson (Nano / Xavier / Orin), Android robots, custom embedded boards, GPU servers |
+| **Perception** | YOLO family, SAM-1/2/3, Faster/Mask R-CNN, pose & depth estimation, anomaly detection |
+| **Stack** | PyTorch, TensorFlow, OpenCV, MediaPipe, C++, classical CV & projective geometry |
 
-**Core Competencies:** Machine Learning, Deep Learning, Computer Vision, NLP, Model Deployment, Data Analysis
+Shipped: CV pipelines over **500K+ images / 100+ hours of video**, 10+ detector benchmark (best **95% mAP**), ~30% production throughput gains from architecture + inference optimization.
+
+My [Kaggle](https://www.kaggle.com/shivpratap0007) is the public lab notebook — **50+ notebooks, 19 datasets**: D-FINE fine-tuning with ONNX/OpenVINO export, SlowFast video action recognition, MoveNet+LSTM pose pipelines, MobileOne×ArcFace face embedding, RF-DETR detection, and the G1 locomotion training runs above.
 
 ---
+
+## 📄 Publications
+
+- **KrishiDisha: Revolutionizing Agriculture with Intelligent Recommendations using Computer Vision** — *IEEE ICoEIT, Jul 2025*. Multi-task CV platform (F1 0.99 / precision 0.96 / R² 0.98), field-validated by 150+ farmers.
+- **Web-BCD: A Machine and Deep Learning Approach for Breast Cancer Detection** — *IBM Technical Report, Dec 2024*. 89%→94% accuracy (ROC-AUC 0.96), deployed live for clinician use.
+- **Understanding the Patterns of Student Dropout: A Review** — *Springer, Smart Technology, Jun 2024* ([chapter](https://link.springer.com/chapter/10.1007/978-981-97-9006-7_20)).
 
 ## 💼 Experience
 
-### ML Engineer | Kody Technolab
-*April 2025 – Present*  
-- Engineered **end-to-end computer vision pipelines** processing 500,000+ images and 100+ hours of video.  
-- Developed and benchmarked **10+ object detection models**; top model achieved **95% mAP**.  
-- Optimized preprocessing pipelines, reducing runtime by **40%**.
+- **ML Engineer · Kody Technolab** — Nov 2025 – present (intern Apr–Oct 2025)
+- **Deep Learning Research Mentee · IBM India** — Jul–Dec 2024
 
-### Global Remote Mentorship | IBM India
-*July 2024 – Dec 2024*  
-- Designed a deep learning solution achieving **high accuracy and reliability**.  
-- Integrated ML pipeline with web technologies to deliver a functional prototype.
-
-### Data Science Intern | Devtown
-*Jan 2023 – Apr 2023*  
-- Cleaned and transformed raw datasets, reducing feature engineering time by 30%.  
-- Created **visual dashboards** using Matplotlib and Seaborn.  
-- Implemented classification and regression models, consistently improving performance.
+**B.Tech CSE (AI/ML)** · Medi-Caps University, Indore · 2021–2025 · CGPA 8.67 · Head of Research & Astronomy, Science Club
 
 ---
 
-## 🚀 Projects
-
-### [KrishiDisha](https://github.com/shivpratapsinghpanwar/KrishiDisha) | AI-driven Platform for Farmers
-*Jan 2025*  
-- Built an AI platform **tested by 150+ farmers**, with multilingual chatbot, e-commerce, and ML modules.  
-- Predictive models: Crop/Fertilizer Recommendation (**F1 = 0.99**), Disease Detection (**Precision = 0.96**), Yield Prediction (**R² = 0.98**).  
-- Deployed using **Flask + TensorFlow/Keras + MySQL** for scalable real-time inference.
-
-### [Web-BCD](https://github.com/shivpratapsinghpanwar/Web-BCD) | Breast Cancer Detection
-*Feb 2024*  
-- Flask-based web app predicting breast cancer using optimized **XGBoost**, improving baseline to **94% accuracy**.  
-- Validated with **F1 = 0.91**, **ROC-AUC = 0.96** on imbalanced datasets.  
-- Deployed on **Heroku** for clinicians.
-
-### [STUDROP](https://github.com/shivpratapsinghpanwar/STUDROP) | Student Dropout Prediction
-*Oct 2023*  
-- ANN system achieving **92% accuracy, F1 = 0.89** to identify at-risk students.  
-- Provided actionable insights for early intervention.
-
-### [World Suicide Data Analysis](https://github.com/shivpratapsinghpanwar/World-Suicide-Analysis)
-*Apr 2023*  
-- EDA and visualization of suicide data across 100+ countries (1985–2016).  
-- Built regression/classification models achieving **88% accuracy**.
-
----
-
-## 📚 Publications
-
-- **KrishiDisha:** Revolutionizing Agriculture with Intelligent Recommendations, Disease Detection, and Yield Prediction | *2025 IEEE ICoEIT*  
-- [**Web-BCD:** A Machine and Deep Learning Approach for Breast Cancer Detection](https://www.connecttobuild.in/Files/1f7e4a4d67c140608f75f2175081f5dc.pdf) | *IBM Technical Report, 2024*  
-- [**Understanding Student Dropout Patterns**](https://link.springer.com/chapter/10.1007/978-981-97-9006-7_20) | *Springer - Smart Technology, 2024*
-
----
-
-## 🏆 Leadership & Achievements
-
-- **Head of Research and Astronomy** | Science Club, Medi-Caps University  
-  Led a 15-member team, managed 3 academic paper submissions, and organized events with **700+ attendees**.  
-- **Sub-Head, Astronomy** | Science Club, Medi-Caps University  
-
-- Certifications: Python for Data Science (NPTEL-IIT Madras), Celonis Process Mining, Cisco Networking, HackerRank SQL & Python, Devtown Neural Networks  
-
----
-
-## 📫 Connect with Me
-
-- Email: shivpratapsinghpanwar19@gmail.com  
-- LinkedIn: [linkedin.com/in/shivpratapsingh-panwar](https://linkedin.com/in/shivpratapsingh-panwar)  
-- GitHub: [github.com/shivpratapsinghpanwar](https://github.com/shivpratapsinghpanwar)
-
----
-
-## ⚡ Fun Fact
-
-I love combining my **astronomy passion** with AI research, exploring both **stars and datasets**! 🌌📊
+*Older projects (KrishiDisha app, Web-BCD, dropout prediction, world-suicide-data analysis) live in the repos below.*
