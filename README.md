@@ -9,16 +9,46 @@
 [![Email](https://img.shields.io/badge/Email-shivpratapsinghpanwar19%40gmail.com-EA4335?style=flat-square&logo=gmail&logoColor=white)](mailto:shivpratapsinghpanwar19@gmail.com)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Shivpratap_Singh_Panwar-0A66C2?style=flat-square&logo=linkedin)](https://www.linkedin.com/in/shivpratap-singh-panwar/)
 [![Kaggle](https://img.shields.io/badge/Kaggle-50%2B_notebooks-20BEFF?style=flat-square&logo=kaggle&logoColor=white)](https://www.kaggle.com/shivpratap0007)
+[![Portfolio](https://img.shields.io/badge/Portfolio-shivpratapsinghpanwar.github.io-00918A?style=flat-square&logo=githubpages&logoColor=white)](https://shivpratapsinghpanwar.github.io)
 
 <br>
 
-| 🤖 23-DoF humanoid | ⚡ INT4 on Jetson | 🎥 Multi-cam robot fleets | 📄 3 peer-reviewed | 🔬 500K+ imgs pipelined |
+| 🏭 Industrial vision | ⚡ INT4 on Jetson | 🎥 Multi-cam robot fleets | 🤖 23-DoF humanoid | 📦 Shipped on PyPI |
 |:---:|:---:|:---:|:---:|:---:|
-| locomotion **from scratch** | full quantization stack | perception in production | IEEE · IBM · Springer | 100+ hrs video |
+| segmentation **in production** | full quantization stack | perception at fleet scale | locomotion **from scratch** | first-author IEEE · Springer |
 
 </div>
 
 ---
+
+## 🏭 Industrial vision, running on a factory floor
+
+Instance segmentation on a **mine conveyor belt** for a private client — size every rock from its
+mask against a **150 mm sieve threshold**, live, on an on-prem GPU server:
+
+```mermaid
+graph LR
+    A["Cameras<br/>cable · RTSP · file"] --> B["Triton model repository<br/>poll-mode, hot-pluggable"]
+    B --> C["Four systems, one pipeline<br/>boulder · foreign object · PPE · belt health"]
+    C --> D["Operator dashboard<br/>FastAPI + React, live alerts"]
+    D -->|"staged weights go live instantly"| B
+```
+
+- **Four detection systems share one pipeline.** A system with no trained model yet shows as
+  *awaiting model* and lights up the moment weights are staged into Triton and bound in config.
+- **Immutable dataset versioning** — every version is a complete self-contained snapshot: physical
+  image copies, a canonical manifest, a full audit report, and ready-to-use COCO **and** Pascal-VOC
+  exports. Re-ingesting new client deliveries never touches a previous version.
+- **Licence-constrained model registry** — AGPL frameworks excluded by client mandate, so the
+  registry is built on permissively licensed torch/torchvision and RF-DETR-Seg only. Constraints
+  like this are part of the engineering, not an afterthought.
+- **One leaderboard ranks every run** on per-size-band mask recall, false positives and median
+  per-frame latency — accuracy and speed compared in a single table instead of argued about.
+
+**Zero-copy perception pipelines** on Jetson alongside it: a pre-allocated shared-memory frame ring
+where pixels are written once and consumed under read-only leases, a latest-wins policy that keeps
+lag bounded and **counts every dropped frame**, and per-service quarantine so one failing model
+never takes the pipeline down.
 
 ## 🤖 Humanoid locomotion — from scratch, and still going
 
@@ -68,8 +98,29 @@ When real medical data runs out, I manufacture it — and **measure whether it a
 
 - Pluggable generative backends: SD 1.5 + per-class LoRA, and a **from-scratch DDPM with zero natural-image prior** for sensitive domains.
 - Every synthetic image is provenance-tracked and screened for **memorization of real patient images** before it may train anything — privacy treated as a hard gate, not a footnote.
-- Honest paired multi-seed A/B on HAM10000: rare-class augmentation moved vascular-lesion F1 **+0.050 ± 0.013** and melanoma recall **+0.116 ± 0.048** ([full measured results](https://github.com/shivpratapsinghpanwar/Synthetic_Data_Factory/blob/main/docs/results.md)).
+- **Paired multi-seed A/B on HAM10000** — 3 seeds, evaluated on 1,508 real images never touched by generation or model selection. Reported as measured: **macro-F1 +0.005 ± 0.019, consistent with zero.** One augmented class cleared its own spread in every seed (vascular lesion F1 **+0.050 ± 0.013**). The largest effect in the experiment was **off-target** — melanoma recall **+0.116 ± 0.048** on a class that was *never augmented* — so the writeup attributes it to class rebalancing rather than synthetic realism, and specifies the balance-matched control that would separate the two. The flattering headline was available; it is not claimed ([full measured results](https://github.com/shivpratapsinghpanwar/Synthetic_Data_Factory/blob/main/docs/results.md)).
 - The entire train→evaluate loop executes remotely on free Kaggle GPUs through a **git-pinned execution runner built for autonomous agent iteration** — every run reproducible to the commit.
+
+
+## 🧪 [data-doctor](https://github.com/shivpratapsinghpanwar/data-doctor) — *diagnose vision datasets before they lie to you*
+
+```bash
+pip install vision-data-doctor
+```
+
+A delivered production train/val split turned out to contain **81 groups of byte-identical images
+spanning both sides**. 40% of the validation set was leaked, the reference model's 0.75 recall did
+not survive an honest split, and **nothing in the training stack had warned**. This makes that a
+10-second CI check instead of a post-mortem:
+
+- **Hashes nominate; only pixels convict.** SHA-256 catches exact copies; two perceptual hash
+  families over all 8 dihedral orientations nominate near-duplicates by pigeonhole bucketing; every
+  candidate is then **verified on decoded pixels**, so each reported pair carries a measured
+  similarity score and matching orientation (`99.4% similar, rot90`) — never a hash coincidence.
+- Train/val leakage, COCO structural defects (duplicate ids, dangling references, degenerate boxes
+  and polygons, zero-annotation images), corrupt files. Exit code 1 on failure — drops straight
+  into CI.
+- Rotated, flipped, re-encoded and resized copies all caught. Pillow is the only dependency.
 
 ---
 
@@ -87,14 +138,16 @@ When real medical data runs out, I manufacture it — and **measure whether it a
 
 ## 📄 Publications
 
-- **KrishiDisha: Revolutionizing Agriculture with Intelligent Recommendations using Computer Vision** — *IEEE ICoEIT, Jul 2025*. Multi-task CV platform (F1 0.99 / precision 0.96 / R² 0.98), **field-validated by 150+ farmers**.
+- **KrishiDisha: Revolutionizing Agriculture with Intelligent Recommendations, Disease Detection, and Yield Prediction** — ***first author*** · *2025 IEEE International Conference on Engineering Innovations and Technologies (ICoEIT), pp. 1028–1040* · [doi:10.1109/ICoEIT63558.2025.11211713](https://doi.org/10.1109/ICoEIT63558.2025.11211713). Multi-task CV platform, **field-validated with 150+ farmers**.
 - **Web-BCD: A Machine and Deep Learning Approach for Breast Cancer Detection** — *IBM Technical Report, Dec 2024*. 89%→94% accuracy (ROC-AUC 0.96), **deployed live for clinician use**.
-- **Understanding the Patterns of Student Dropout: A Review** — *Springer, Smart Technology, Jun 2024* ([chapter](https://link.springer.com/chapter/10.1007/978-981-97-9006-7_20)).
+- **A Review on Understanding the Patterns of Student Dropout** — ***first author*** · *Studies in Smart Technologies, Springer, pp. 235–250, 2025* · [doi:10.1007/978-981-97-9006-7_20](https://doi.org/10.1007/978-981-97-9006-7_20).
 
 ## 💼 The short version
 
 **ML Engineer · Kody Technolab** (Nov 2025 – present; intern Apr–Oct 2025) · **DL Research Mentee · IBM India** (2024)
-**B.Tech CSE (AI/ML)** · Medi-Caps University · CGPA 8.67 · Head of Research & Astronomy, Science Club
+**B.Tech CSE (AI/ML)** · Medi-Caps University · CGPA 8.67
+
+Figures, architecture diagrams and measured results → **[shivpratapsinghpanwar.github.io](https://shivpratapsinghpanwar.github.io)**
 
 ---
 
