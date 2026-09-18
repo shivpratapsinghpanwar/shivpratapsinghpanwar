@@ -13,37 +13,40 @@
 
 <br>
 
-| 🏭 Industrial vision | ⚡ INT4 on Jetson | 🎥 Multi-cam robot fleets | 🤖 23-DoF humanoid | 📦 Shipped on PyPI |
+| 🏭 Multi-model serving | ⚡ INT4 on Jetson | 🎥 Multi-cam robot fleets | 🤖 23-DoF humanoid | 📦 Shipped on PyPI |
 |:---:|:---:|:---:|:---:|:---:|
-| segmentation **in production** | full quantization stack | perception at fleet scale | locomotion **from scratch** | first-author IEEE · Springer |
+| **in production**, on one GPU | full quantization stack | perception at fleet scale | locomotion **from scratch** | first-author IEEE · Springer |
 
 </div>
 
 ---
 
-## 🏭 Industrial vision, running on a factory floor
+## 🏭 Production vision systems
 
-Instance segmentation on a **mine conveyor belt** for a private client — size every rock from its
-mask against a **150 mm sieve threshold**, live, on an on-prem GPU server:
+The part of computer vision that is not the model: getting many models to run together, on real
+hardware, against numbers that hold up. Patterns I build and own:
 
 ```mermaid
 graph LR
-    A["Cameras<br/>cable · RTSP · file"] --> B["Triton model repository<br/>poll-mode, hot-pluggable"]
-    B --> C["Four systems, one pipeline<br/>boulder · foreign object · PPE · belt health"]
+    A["Camera ingest<br/>cable · RTSP · file"] --> B["Triton model repository<br/>poll-mode, hot-pluggable"]
+    B --> C["Several detection systems<br/>sharing one pipeline"]
     C --> D["Operator dashboard<br/>FastAPI + React, live alerts"]
-    D -->|"staged weights go live instantly"| B
+    D -->|"staged weights go live without a redeploy"| B
 ```
 
-- **Four detection systems share one pipeline.** A system with no trained model yet shows as
-  *awaiting model* and lights up the moment weights are staged into Triton and bound in config.
-- **Immutable dataset versioning** — every version is a complete self-contained snapshot: physical
+- **Multi-model serving.** Several independent detection systems share one pipeline and one GPU
+  budget. A system with no trained model yet reports itself as *awaiting model* and comes online the
+  moment weights are staged — no redeploy, no downtime.
+- **Immutable dataset versioning.** Every version is a complete self-contained snapshot: physical
   image copies, a canonical manifest, a full audit report, and ready-to-use COCO **and** Pascal-VOC
-  exports. Re-ingesting new client deliveries never touches a previous version.
-- **Licence-constrained model registry** — AGPL frameworks excluded by client mandate, so the
-  registry is built on permissively licensed torch/torchvision and RF-DETR-Seg only. Constraints
-  like this are part of the engineering, not an afterthought.
-- **One leaderboard ranks every run** on per-size-band mask recall, false positives and median
-  per-frame latency — accuracy and speed compared in a single table instead of argued about.
+  exports. Ingesting new data never mutates a previous version, so any result stays reproducible
+  against the exact data that produced it.
+- **One leaderboard for every run**, ranking models on per-size-band mask recall, false positives and
+  median per-frame latency together — so accuracy and speed get compared in a single table instead
+  of argued about.
+- **Licence-aware model selection.** Permissive-only registries (torch/torchvision, RF-DETR-Seg) when
+  a deployment context rules out copyleft frameworks — licence constraints are part of the
+  engineering, not an afterthought.
 
 **Zero-copy perception pipelines** on Jetson alongside it: a pre-allocated shared-memory frame ring
 where pixels are written once and consumed under read-only leases, a latest-wins policy that keeps
