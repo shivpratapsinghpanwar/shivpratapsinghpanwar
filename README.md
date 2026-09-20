@@ -75,7 +75,7 @@ graph LR
 
 ## 🎥 Perception for robot fleets
 
-At **Kody Technolab** (full-stack robotics company) I build the vision layer for **multi-camera robots operating as fleets** — security, advertisement, and data-gathering platforms plus the **Mahindra Assistant**:
+At **Kody Technolab** (full-stack robotics company) I build the vision layer for **multi-camera robots operating as fleets** — security, advertisement, data-gathering and assistant platforms:
 
 ```mermaid
 graph LR
