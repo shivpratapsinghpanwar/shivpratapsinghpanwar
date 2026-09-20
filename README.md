@@ -125,6 +125,29 @@ not survive an honest split, and **nothing in the training stack had warned**. T
   into CI.
 - Rotated, flipped, re-encoded and resized copies all caught. Pillow is the only dependency.
 
+
+## 🌾 KrishiDisha — multi-task CV for agriculture, validated in the field
+
+First-author **IEEE ICoEIT 2025** paper ([doi:10.1109/ICoEIT63558.2025.11211713](https://doi.org/10.1109/ICoEIT63558.2025.11211713),
+pp. 1028–1040). One platform, three jobs off the same imagery:
+
+```mermaid
+graph LR
+    A["Field imagery"] --> B["Shared vision backbone"]
+    B --> C["Disease detection<br/>classification"]
+    B --> D["Crop recommendation<br/>multi-class"]
+    B --> E["Yield prediction<br/>regression"]
+    C & D & E --> F["Advisory delivered<br/>to the farmer"]
+```
+
+- Classification **F1 0.99**, precision **0.96**; yield regression **R² 0.98**.
+- The number that actually matters: **field-validated with 150+ farmers** — real users on real
+  plots, not only a held-out split. Most agri-CV work stops at the test set; this one went
+  outside and got used.
+- Multi-task by design — detection, classification and regression share one backbone and one
+  inference pass, which is what makes it deployable on the cheap hardware a farm advisory
+  service can actually afford.
+
 ---
 
 ## ⚡ The toolbox
