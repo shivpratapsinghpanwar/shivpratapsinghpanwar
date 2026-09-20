@@ -126,27 +126,48 @@ not survive an honest split, and **nothing in the training stack had warned**. T
 - Rotated, flipped, re-encoded and resized copies all caught. Pillow is the only dependency.
 
 
-## 🌾 KrishiDisha — multi-task CV for agriculture, validated in the field
+## 🌾 [KrishiDisha](https://github.com/shivpratapsinghpanwar/KrishiDisha.ai) — a grounded agricultural assistant
 
-First-author **IEEE ICoEIT 2025** paper ([doi:10.1109/ICoEIT63558.2025.11211713](https://doi.org/10.1109/ICoEIT63558.2025.11211713),
-pp. 1028–1040). One platform, three jobs off the same imagery:
+First-author **IEEE ICoEIT 2025** ([doi:10.1109/ICoEIT63558.2025.11211713](https://doi.org/10.1109/ICoEIT63558.2025.11211713),
+pp. 1028–1040), still under active development. Eight services behind one advisory surface, and an assistant
+that is **never asked to know agronomy** — it is handed tools and made to cite them.
 
 ```mermaid
-graph LR
-    A["Field imagery"] --> B["Shared vision backbone"]
-    B --> C["Disease detection<br/>classification"]
-    B --> D["Crop recommendation<br/>multi-class"]
-    B --> E["Yield prediction<br/>regression"]
-    C & D & E --> F["Advisory delivered<br/>to the farmer"]
+graph TD
+    A["Web UI · chat widget · JSON API /api/v1"] --> B["Flask blueprints<br/>main · auth · farmer · marketplace · chat · admin · api"]
+    B --> C{"Assistant core<br/>LLM_PROVIDER"}
+    C -->|anthropic| D["13-tool loop<br/>+ TF-IDF retrieval"]
+    C -->|OpenAI-compatible| D
+    C -->|rules — offline| D
+    D --> E["Tabular models<br/>crop · fertilizer · yield"]
+    D --> F["Disease CNN<br/>MobileNetV3 · 38 classes"]
+    D --> G["Knowledge base<br/>schemes · guides · pests · MSP"]
+    D --> H["Live feeds<br/>Open-Meteo · Agmarknet"]
+    E & F & G & H --> I["Grounded answer + PDF report"]
 ```
 
-- Classification **F1 0.99**, precision **0.96**; yield regression **R² 0.98**.
-- The number that actually matters: **field-validated with 150+ farmers** — real users on real
-  plots, not only a held-out split. Most agri-CV work stops at the test set; this one went
-  outside and got used.
-- Multi-task by design — detection, classification and regression share one backbone and one
-  inference pass, which is what makes it deployable on the cheap hardware a farm advisory
-  service can actually afford.
+**The services:** crop recommendation (22 crops from an N-P-K and climate soil test, top-3 with probabilities
+and indicative economics) · fertilizer recommendation with a kg-and-bags dose calculator and split schedule ·
+leaf-photo disease detection across **38 PlantVillage classes** with prevention steps · yield prediction for
+**55 crops × 30 states × 6 seasons** · weather advisories from Open-Meteo (spraying windows, frost and heat
+warnings, soil moisture) · **live mandi prices** from data.gov.in's Agmarknet with an MSP fallback · **16
+central government schemes** with eligibility and how to apply, 32 crop guides and a sowing calendar · a
+**marketplace** of 60 farm inputs with cart, COD/UPI checkout, stock control and order tracking. Every
+recommendation emits a PDF the farmer can carry to a dealer.
+
+**Model selection was a comparison, not a single fit.** Seven classifiers (RF, Gradient Boosting, XGBoost, SVM,
+kNN, Decision Tree, GaussianNB) under 5-fold CV with a fixed seed and a held-out test split — crop went to
+**GaussianNB, 99.5% test accuracy** (macro-F1 0.995, CV 0.995 ± 0.004) over RF's 99.3%; fertilizer to
+**XGBoost**; yield to **XGBoost at test R² 0.94** (CV 0.964 ± 0.028). Per-class reports and evaluation plots are
+committed; `python -m ml.train_all` reproduces all of it.
+
+**It degrades instead of breaking.** The `rules` provider is a complete offline intent engine that still runs
+the ML models, weather and price lookups, the dose calculator, the scheme database and knowledge search — so
+with no API key, no credit and no connectivity, the assistant keeps answering. For these users that matters
+more than benchmark accuracy. Field-validated with **150+ farmers**; the test suite runs fully offline.
+
+**In progress:** a small in-house language model trained on the project's own agronomy corpus, to replace the
+hosted providers entirely and run the assistant on commodity hardware.
 
 ---
 
