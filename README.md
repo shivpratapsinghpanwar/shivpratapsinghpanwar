@@ -13,45 +13,13 @@
 
 <br>
 
-| 🏭 Multi-model serving | ⚡ INT4 on Jetson | 🎥 Multi-cam robot fleets | 🤖 23-DoF humanoid | 📦 Shipped on PyPI |
+| 🌱 Field-validated | ⚡ INT4 on Jetson | 🎥 Multi-cam robot fleets | 🤖 23-DoF humanoid | 📦 Shipped on PyPI |
 |:---:|:---:|:---:|:---:|:---:|
-| **in production**, on one GPU | full quantization stack | perception at fleet scale | locomotion **from scratch** | first-author IEEE · Springer |
+| KrishiDisha · 150+ farmers | full quantization stack | perception at fleet scale | locomotion **from scratch** | first-author IEEE · Springer |
 
 </div>
 
 ---
-
-## 🏭 Production vision systems
-
-The part of computer vision that is not the model: getting many models to run together, on real
-hardware, against numbers that hold up. Patterns I build and own:
-
-```mermaid
-graph LR
-    A["Camera ingest<br/>cable · RTSP · file"] --> B["Triton model repository<br/>poll-mode, hot-pluggable"]
-    B --> C["Several detection systems<br/>sharing one pipeline"]
-    C --> D["Operator dashboard<br/>FastAPI + React, live alerts"]
-    D -->|"staged weights go live without a redeploy"| B
-```
-
-- **Multi-model serving.** Several independent detection systems share one pipeline and one GPU
-  budget. A system with no trained model yet reports itself as *awaiting model* and comes online the
-  moment weights are staged — no redeploy, no downtime.
-- **Immutable dataset versioning.** Every version is a complete self-contained snapshot: physical
-  image copies, a canonical manifest, a full audit report, and ready-to-use COCO **and** Pascal-VOC
-  exports. Ingesting new data never mutates a previous version, so any result stays reproducible
-  against the exact data that produced it.
-- **One leaderboard for every run**, ranking models on per-size-band mask recall, false positives and
-  median per-frame latency together — so accuracy and speed get compared in a single table instead
-  of argued about.
-- **Licence-aware model selection.** Permissive-only registries (torch/torchvision, RF-DETR-Seg) when
-  a deployment context rules out copyleft frameworks — licence constraints are part of the
-  engineering, not an afterthought.
-
-**Zero-copy perception pipelines** on Jetson alongside it: a pre-allocated shared-memory frame ring
-where pixels are written once and consumed under read-only leases, a latest-wins policy that keeps
-lag bounded and **counts every dropped frame**, and per-service quarantine so one failing model
-never takes the pipeline down.
 
 ## 🤖 Humanoid locomotion — from scratch, and still going
 
@@ -73,27 +41,16 @@ graph LR
 - **Debugging like an engineer, not a gambler** — when a policy failed backward pushes, it got its own isolation run, diagnosis, and targeted curriculum fix before retraining. Every experiment checkpointed and resumable across free-tier GPU session limits.
 - Foundation-model track: [custom design work](https://github.com/shivpratapsinghpanwar/tau-0-vla_Custom_Design) on [τ0-VLA](https://github.com/sii-research/tau-0-vla) — world-model-guided test-time computation for robot control. Base stack: [my fork](https://github.com/shivpratapsinghpanwar/unitree_rl_mjlab_custom_robot) of Unitree's RL suite on [mjlab](https://github.com/mujocolab/mjlab)/MuJoCo Warp.
 
-## 🎥 Perception for robot fleets
+## 🎥 Day job — perception for production robots
 
-At **Kody Technolab** (full-stack robotics company) I build the vision layer for **multi-camera robots operating as fleets** — security, advertisement, data-gathering and assistant platforms:
+At **Kody Technolab** I build the vision layer for multi-camera robots: multi-task perception (detection,
+instance segmentation, pose and depth) quantised **FP16 → INT4** and deployed to NVIDIA Jetson, Android robots
+and on-prem GPU servers, across security, advertising, assistant and data-gathering platforms — plus
+perception for a **medical screening robot** targeting rare congenital conditions, a genuinely low-data problem
+where classical geometry serves as the fallback.
 
-```mermaid
-graph LR
-    A["Multi-camera ingest<br/>sync & calibration"] --> B["Multi-task perception<br/>detect · segment · pose · depth"]
-    B --> C["Quantize<br/>FP16 → INT4"]
-    C --> D["Edge deploy<br/>Jetson · Android robots"]
-    D --> E["Fleet in production"]
-    E -->|"data flywheel: field footage → retraining"| A
-```
-
-- Multi-task heads sharing one latency budget: detection, instance segmentation, pose and depth estimation running together on embedded compute.
-- **The whole quantization ladder** — FP16 / INT8 / UINT8 / **UINT4** via TensorRT, ONNX Runtime, TFLite, OpenVINO — chosen per platform, per model, per latency budget.
-- Pipelines that have processed **500K+ images and 100+ hours of robot video**; preprocessing time cut **40%**, production throughput up **~30%**.
-- Model strategy per constraint: YOLO family, SAM-1/2/3, D-FINE, RF-DETR, MobileOne×ArcFace, custom architectures — the right tool for the hardware in the room, with **classical projective geometry as the fallback where deep learning runs out of data**.
-
-## 🏥 Vision where none exists — medical AI
-
-Building perception for **medical robotics targeting rare anomalies** — conditions with **no existing CV solution and almost no training data** when development starts. That's the point: low-data strategies, geometry-first fallbacks where deep learning runs out of examples, and rigorous evaluation on curated clinical splits.
+Architecture, customers and deployment specifics stay with my employer. Everything below is work I own
+outright — open source, research, or published.
 
 ## 🏭 [Synthetic Data Factory](https://github.com/shivpratapsinghpanwar/Synthetic_Data_Factory)
 
